@@ -13,8 +13,8 @@ import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import comunicaComu.Estats;
 import comunicaComu.IPlayer;
 import comunicaComu.IProxyLobby;
-import comunicaComu.Network;
 import comunicaComu.SPlayer;
+import comunicaComu.SRoom;
 import comunicaServer.Room.Tipus;
 
 public class LobbyPlayer extends Connection implements IPlayer,Observer{
@@ -62,33 +62,23 @@ public class LobbyPlayer extends Connection implements IPlayer,Observer{
 	}
 
 	@Override
-	public Array<Room> getRooms(Tipus tipus) {
-		// TODO Auto-generated method stub
-		return lobbyServer.getRooms(tipus);
-	}
-	@Override
-	public Estats joinRoomSetimig(Room room) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Array<LobbyGame> getRoomGames(Room room) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Estats joinGame(LobbyGame lobbyGame) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Estats createGame(LobbyGame lobbyGame) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public Estats joinGame(String nom) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Estats createGame(int maxPlayers, String nom) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public SRoom getRoom() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
