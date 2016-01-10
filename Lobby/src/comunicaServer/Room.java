@@ -2,17 +2,22 @@ package comunicaServer;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import comunicaComu.SGame;
+import comunicaComu.SGameSetimig;
+import comunicaComu.SPlayer;
+import comunicaComu.SRoom;
+//import comunicaComu.SRoom.Tipus;
 import utils.Array;
 
 
 public abstract class Room extends Observable{
-	public static enum Tipus {Setimig};
-	protected Tipus tipus;
-	public Tipus getTipus() {
+	
+	protected SRoom.Tipus tipus;
+	public SRoom.Tipus getTipus() {
 		return tipus;
 	}
 
-	public void setTipus(Tipus tipus) {
+	public void setTipus(SRoom.Tipus tipus) {
 		this.tipus = tipus;
 	}
 
@@ -89,4 +94,29 @@ public abstract class Room extends Observable{
 		if (retorn) notifyObservers(game);
 		return retorn;
 	}
+
+	public SRoom getSRoom(LobbyPlayer lobbyPlayer) {
+		Array <SPlayer> sPlayers = new Array<SPlayer>();
+		Array <SGame> sGames = null;
+		switch (tipus){
+		case Setimig :
+			sGames = new Array<SGame>();
+			break;
+		}
+		synchronized (this){
+			for (LobbyPlayer player : players) sPlayers.add(new SPlayer(player.sPlayer.nom));
+			for (LobbyGame auxGame : games) {
+				Array <SPlayer> sGamePlayers = auxGame.getSPlayers(lobbyPlayer);
+				switch (tipus){
+				case Setimig :
+					sGames.add(new SGameSetimig(auxGame.estat,auxGame.maxPlayers,auxGame.nom,sGamePlayers,((GameSetimig)auxGame).credit,((GameSetimig)auxGame).maxAposta));
+					break;
+				}
+			}
+			addObserver(lobbyPlayer);
+		}
+		return (new SRoom(tipus, sGames, sPlayers, maxGames, maxPlayers, nom));
+	}
+	
+	
 }

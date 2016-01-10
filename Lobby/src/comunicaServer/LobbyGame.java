@@ -2,12 +2,13 @@ package comunicaServer;
 
 import java.util.Observable;
 
+import comunicaComu.SGame;
+import comunicaComu.SPlayer;
 import utils.Array;
 
 public abstract class LobbyGame extends Observable{
 	protected String nom;
-	public static enum Estat {WaitPlayers,Playing}
-	protected Estat estat;
+	protected SGame.Estat estat;
 	protected Array<LobbyPlayer> players;
 	protected int maxPlayers;
 	
@@ -38,5 +39,14 @@ public abstract class LobbyGame extends Observable{
 		}
 		notifyObservers(player);
 		return true;
+	}
+	public Array<SPlayer> getSPlayers(LobbyPlayer lobbyPlayer) {
+		Array<SPlayer> sPlayers = new Array<SPlayer>();
+		synchronized(players){
+			for (LobbyPlayer auxPlayer : players) sPlayers.add(new SPlayer(auxPlayer.sPlayer.nom));
+			this.addObserver(lobbyPlayer);
+		}
+		// TODO Auto-generated method stub
+		return sPlayers;
 	}
 }

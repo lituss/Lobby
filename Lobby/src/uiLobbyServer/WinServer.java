@@ -10,11 +10,16 @@ import java.io.IOException;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 
+import comunicaComu.SGame;
+import comunicaComu.SPlayer;
+import comunicaComu.SRoom;
 import comunicaServer.LobbyServer;
 
 import javax.swing.JList;
 import javax.swing.JTextArea;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 
 
@@ -24,6 +29,8 @@ public class WinServer {
 	private JTextField txtUser;
 	private JTextField txtPass;
 	private LobbyServer lobbyServer;
+	JList Players;
+	ListModel listModelPlayers;
 	/**
 	 * Launch the application.
 	 */
@@ -62,10 +69,12 @@ public class WinServer {
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		JList Players = new JList();
+		listModelPlayers = new DefaultListModel();
+		Players = new JList(listModelPlayers);
 		Players.setName("Players");
 		Players.setBounds(10, 28, 189, 200);
 		panel.add(Players);
+		
 		
 		JList Rooms = new JList();
 		Rooms.setBounds(232, 28, 204, 200);
@@ -106,5 +115,24 @@ public class WinServer {
 		JButton btnToGame = new JButton("To Game");
 		btnToGame.setBounds(10, 688, 89, 23);
 		panel.add(btnToGame);
+	}
+	public void addPlayer (SPlayer player){
+		((DefaultListModel) listModelPlayers).addElement(player.nom);
+	}
+	public void delPlayer (String nom){
+		((DefaultListModel) listModelPlayers).removeElement(nom);
+		
+	}
+	public void addRoom (SRoom sRoom){
+		
+	}
+	public void delRoom (String nom){
+		
+	}
+	public void addGame(SGame sGame){
+		
+	}
+	public void delGame(String nom){
+		
 	}
 }

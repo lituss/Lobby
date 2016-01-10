@@ -22,5 +22,10 @@ public class Network {
 		// The classes of all method parameters and return values
 		// for remote objects must also be registered.
 		kryo.register(String[].class);
+		kryo.register(SGame.class);
+		kryo.register(SPlayer.class);
+		kryo.register(SRoom.class);
+		kryo.register(Estats.class);
+		
 	}
 }

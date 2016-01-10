@@ -5,8 +5,12 @@ import java.io.IOException;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import comunicaComu.IProxyLobby;
 import comunicaComu.Network;
+import comunicaComu.SPlayer;
+import comunicaComu.SRoom;
 import uiLobbyServer.WinServer;
 import utils.Array;
 
@@ -38,7 +42,9 @@ public LobbyServer(WinServer winServer) throws IOException{
 				// Each connection represents a player and has fields
 				// to store state and methods to perform actions.
 				LobbyPlayer player = new LobbyPlayer();
+				
 				players.add(player);
+				winServer.
 				return player;
 			}
 		};
@@ -64,10 +70,23 @@ public LobbyServer(WinServer winServer) throws IOException{
 	}
 	
 	public sqlDB getsql(){return sql;}
-	public Array<Room> getRooms(Room.Tipus tipus){
+	public Array<Room> getRooms(SRoom.Tipus tipus){
 		Array<Room> auxRooms = new Array<Room>();
 		for (Room auxRoom : rooms) if (auxRoom.getTipus() == tipus || tipus ==null) auxRooms.add(auxRoom);
 		return auxRooms;
+	}
+	public void enviaSRooms(IProxyLobby iProxyLobby,LobbyPlayer lobbyPlayer){
+		SRoom.Tipus tipus = iProxyLobby.getTipusRoom();
+		Array<SRoom> auxSRooms = new Array<SRoom>();
+		synchronized (rooms){
+			
+			for (Room auxRoom : rooms) if (auxRoom.getTipus() == tipus || tipus ==null){
+				auxSRooms.add(auxRoom.getSRoom(lobbyPlayer));
+			}
+				
+		}
+		for (SRoom  aux : auxSRooms) iProxyLobby.addRoom(aux);	
+		
 	}
 	
 }

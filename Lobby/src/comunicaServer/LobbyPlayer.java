@@ -16,22 +16,24 @@ import comunicaComu.IProxyLobby;
 import comunicaComu.Network;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
-import comunicaServer.Room.Tipus;
 
 public class LobbyPlayer extends Connection implements IPlayer,Observer{
 	public Observable obs;
 	private Estats estat;
 	private static LobbyServer lobbyServer;
 	private IProxyLobby iProxyLobby;
-	private SPlayer sPlayer;
+	SPlayer sPlayer;
 	
 	public LobbyPlayer(){
 		obs = new Observable();
 		new ObjectSpace(this).register(Network.PLAYER, this);
-		sPlayer = new SPlayer();
+		iProxyLobby = (IProxyLobby) ObjectSpace.getRemoteObject(this, Network.PROXY_LOBBY, IProxyLobby.class);
+		lobbyServer.enviaSRooms(iProxyLobby);
+		sPlayer = new SPlayer("Desconegut");
 	}
 	public static void putLobbyServer(LobbyServer auxLobbyServer){
 		lobbyServer = auxLobbyServer;
+		
 		}
 	
 	@Override
@@ -49,6 +51,7 @@ public class LobbyPlayer extends Connection implements IPlayer,Observer{
 		}
 		else {
 			estat = Estats.Logued;
+			sPlayer.nom = user;
 			return estat;
 		}
 	}

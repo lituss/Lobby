@@ -3,7 +3,7 @@ package comunicaComu;
 import utils.Array;
 
 public class SGame {
-	protected static enum Estat {Playing,WaitPlayers};
+	public static enum Estat {Playing,WaitPlayers};
 	protected Estat estat;
 	protected int maxPlayers;
 	protected String nom;

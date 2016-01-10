@@ -8,10 +8,10 @@ public class SetimigRoom extends Room {
 		tipus = Tipus.Setimig;
 	}
 	public boolean createGame(String nom,LobbyPlayer player,int numPlayers,int credit,int apostaMaxima){
-		LobbyGame lobbyGame = new GameSetimig(nom,player,numPlayers,credit,apostaMaxima);
+		addGame(new GameSetimig(nom,player,numPlayers,credit,apostaMaxima));
 		return true;
 		
 	}
 
-
+	
 }
