@@ -30,7 +30,6 @@ public class WinServer {
 	private JTextField txtUser;
 	private JTextField txtPass;
 	private IPlayer LobbyPlayer ;
-	private ProxyPlayer proxyPlayer;
 	private LobbyClient lobbyClient;
 	private final Action action = new SwingAction();
 	/**

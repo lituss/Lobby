@@ -13,6 +13,7 @@ import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 import comunicaComu.Estats;
 import comunicaComu.IPlayer;
 import comunicaComu.IProxyLobby;
+import comunicaComu.Network;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
 import comunicaServer.Room.Tipus;
@@ -31,7 +32,6 @@ public class LobbyPlayer extends Connection implements IPlayer,Observer{
 	}
 	public static void putLobbyServer(LobbyServer auxLobbyServer){
 		lobbyServer = auxLobbyServer;
-		iProxyLobby = lobbyServer.
 		}
 	
 	@Override
