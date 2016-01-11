@@ -44,7 +44,7 @@ public LobbyServer(WinServer winServer) throws IOException{
 				LobbyPlayer player = new LobbyPlayer();
 				
 				players.add(player);
-				winServer.
+				winServer.addPlayer(player.sPlayer);
 				return player;
 			}
 		};
@@ -56,6 +56,7 @@ public LobbyServer(WinServer winServer) throws IOException{
 			public void disconnected (Connection connection) {
 				LobbyPlayer player = (LobbyPlayer)connection;
 				players.removeValue(player,true);
+				winServer.delPlayer(player.sPlayer.nom);
 			}
 		});
 		server.bind(Network.port);

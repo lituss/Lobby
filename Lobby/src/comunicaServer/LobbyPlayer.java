@@ -28,8 +28,9 @@ public class LobbyPlayer extends Connection implements IPlayer,Observer{
 		obs = new Observable();
 		new ObjectSpace(this).register(Network.PLAYER, this);
 		iProxyLobby = (IProxyLobby) ObjectSpace.getRemoteObject(this, Network.PROXY_LOBBY, IProxyLobby.class);
-		lobbyServer.enviaSRooms(iProxyLobby);
 		sPlayer = new SPlayer("Desconegut");
+		lobbyServer.enviaSRooms(iProxyLobby,this);
+		
 	}
 	public static void putLobbyServer(LobbyServer auxLobbyServer){
 		lobbyServer = auxLobbyServer;

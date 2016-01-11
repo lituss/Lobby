@@ -1,5 +1,7 @@
 package comunicaComu;
 
+import java.lang.reflect.Array;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
@@ -26,6 +28,8 @@ public class Network {
 		kryo.register(SPlayer.class);
 		kryo.register(SRoom.class);
 		kryo.register(Estats.class);
+		kryo.register(Array.class);
+		kryo.register(SRoom.Tipus.class);
 		
 	}
 }

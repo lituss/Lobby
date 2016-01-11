@@ -13,7 +13,10 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 
 import comunicaComu.IPlayer;
-
+import comunicaComu.SGame;
+import comunicaComu.SGameSetimig;
+import comunicaComu.SPlayer;
+import comunicaComu.SRoom;
 
 import javax.swing.JList;
 import javax.swing.JTextArea;
@@ -21,6 +24,8 @@ import javax.swing.JButton;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
+import javax.swing.DefaultListModel;
+
 import java.awt.event.ActionListener;
 
 
@@ -32,6 +37,7 @@ public class WinServer {
 	private IPlayer LobbyPlayer ;
 	private LobbyClient lobbyClient;
 	private final Action action = new SwingAction();
+	private DefaultListModel listModelPlayers,listModelRooms,listModelGames;
 	/**
 	 * Launch the application.
 	 */
@@ -70,12 +76,14 @@ public class WinServer {
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		JList Players = new JList();
+		listModelPlayers = new DefaultListModel();
+		JList Players = new JList(listModelPlayers);
 		Players.setName("Players");
 		Players.setBounds(10, 28, 189, 200);
 		panel.add(Players);
 		
-		JList Rooms = new JList();
+		listModelRooms = new DefaultListModel();
+		JList Rooms = new JList(listModelRooms);
 		Rooms.setBounds(232, 28, 204, 200);
 		panel.add(Rooms);
 		
@@ -83,7 +91,8 @@ public class WinServer {
 		textArea.setBounds(10, 270, 277, 211);
 		panel.add(textArea);
 		
-		JList Games = new JList();
+		listModelGames = new DefaultListModel();
+		JList Games = new JList(listModelGames);
 		Games.setBounds(378, 274, 217, 200);
 		panel.add(Games);
 		
@@ -127,5 +136,25 @@ public class WinServer {
 		}
 		public void actionPerformed(ActionEvent e) {
 		}
+	}
+	
+	public void addPlayer (SPlayer player){
+		((DefaultListModel) listModelPlayers).addElement(player.nom);
+	}
+	public void delPlayer (String nom){
+		((DefaultListModel) listModelPlayers).removeElement(nom);
+		
+	}
+	public void addRoom (SRoom sRoom){
+		((DefaultListModel) listModelRooms).addElement(sRoom.nom);
+	}
+	public void delRoom (String nom){
+		((DefaultListModel) listModelRooms).removeElement(nom);
+	}
+	public void addGame(SGame sGame){
+		((DefaultListModel) listModelGames).addElement(((SGameSetimig)sGame));
+	}
+	public void delGame(String nom){
+		((DefaultListModel) listModelGames).removeElement(nom);
 	}
 }

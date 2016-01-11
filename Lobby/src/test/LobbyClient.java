@@ -10,14 +10,18 @@ import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
 import comunicaComu.IPlayer;
 import comunicaComu.Network;
+import comunicaComu.SRoom;
 
 public class LobbyClient {
 	Client client;
 	IPlayer player;
 	ProxyLobby proxyLobby;
+	WinServer winserver;
 	public boolean connected = false;
+	public SRoom.Tipus tipusRoom = SRoom.Tipus.Setimig; 
 
-	public LobbyClient (WinServer winserver) {
+	public LobbyClient (WinServer winServer) {
+		this.winserver = winServer;
 		client = new Client();
 		client.start();
 
@@ -27,6 +31,9 @@ public class LobbyClient {
 		// Get the Player on the other end of the connection.
 		// This allows the client to call methods on the server.
 		player = ObjectSpace.getRemoteObject(client, Network.PLAYER, IPlayer.class);
+		proxyLobby = new ProxyLobby(this);
+		// Register the chat frame so the server can call methods on it.
+		new ObjectSpace(client).register(Network.PROXY_LOBBY, proxyLobby);
 
 		client.addListener(new Listener() {
 			public void disconnected (Connection connection) {
@@ -43,9 +50,9 @@ public class LobbyClient {
 		
 
 		// The chat frame contains all the Swing stuff.
-		proxyLobby = new ProxyLobby();
+		//--proxyLobby = new ProxyLobby(this);
 		// Register the chat frame so the server can call methods on it.
-		new ObjectSpace(client).register(Network.PROXY_LOBBY, proxyLobby);
+		//--new ObjectSpace(client).register(Network.PROXY_LOBBY, proxyLobby);
 		// This listener is called when the send button is clicked.
 		/*chatFrame.setSendListener(new Runnable() {
 			public void run () {

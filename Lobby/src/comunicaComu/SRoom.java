@@ -1,6 +1,6 @@
 package comunicaComu;
 
-import comunicaServer.Room.Tipus;
+
 import utils.Array;
 
 public class SRoom {
