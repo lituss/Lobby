@@ -12,6 +12,7 @@ import comunicaComu.Network;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
 import uiLobbyServer.WinServer;
+import uiLobbyServer.WinServer.SwingOperations;
 import utils.Array;
 
 public class LobbyServer {
@@ -44,7 +45,12 @@ public LobbyServer(WinServer winServer) throws IOException{
 				LobbyPlayer player = new LobbyPlayer();
 				
 				players.add(player);
-				winServer.addPlayer(player.sPlayer);
+				try {
+					winServer.nodes.put(new SwingOperations(SwingOperations.operations.addPlayer,player.sPlayer));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				return player;
 			}
 		};
@@ -71,6 +77,7 @@ public LobbyServer(WinServer winServer) throws IOException{
 	}
 	
 	public sqlDB getsql(){return sql;}
+	
 	public Array<Room> getRooms(SRoom.Tipus tipus){
 		Array<Room> auxRooms = new Array<Room>();
 		for (Room auxRoom : rooms) if (auxRoom.getTipus() == tipus || tipus ==null) auxRooms.add(auxRoom);
