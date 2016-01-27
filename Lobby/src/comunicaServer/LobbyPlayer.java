@@ -17,21 +17,19 @@ import comunicaComu.Network;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
 
-public class LobbyPlayer extends Connection implements IPlayer,Observer{
-	public Observable obs;
+public class LobbyPlayer extends Observable implements IPlayer,Observer{
+	private Connection connection;
 	private Estats estat;
 	private static LobbyServer lobbyServer;
-	private IProxyLobby iProxyLobby;
 	SPlayer sPlayer;
 	
-	public LobbyPlayer(){
-		obs = new Observable();
+	public LobbyPlayer(Connection connection){
+		this.connection = connection;
 		//new ObjectSpace(this).register(Network.PLAYER, this);
 		//iProxyLobby = (IProxyLobby) ObjectSpace.getRemoteObject(this, Network.PROXY_LOBBY, IProxyLobby.class);
-		sPlayer = new SPlayer("Desconegut");
-		lobbyServer.enviaSRooms(iProxyLobby,this);
-		
+		//sPlayer = new SPlayer("Desconegut");	
 	}
+	
 	public static void putLobbyServer(LobbyServer auxLobbyServer){
 		lobbyServer = auxLobbyServer;
 		
