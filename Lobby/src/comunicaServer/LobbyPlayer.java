@@ -16,56 +16,66 @@ import comunicaComu.IProxyLobby;
 import comunicaComu.Network;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
+import cues.ElementDeSortida;
+
 
 public class LobbyPlayer extends Observable implements IPlayer,Observer{
 	private Connection connection;
 	private Estats estat;
-	private static LobbyServer lobbyServer;
+	static LobbyServer lobbyServer;
 	SPlayer sPlayer;
 	
 	public LobbyPlayer(Connection connection){
 		this.connection = connection;
+		estat = Estats.connectat;
+		LobbyServer.timer.timeoutLogin(this);
+		addObserver(lobbyServer);
+		this.setChanged();
+		this.notifyObservers();
 		//new ObjectSpace(this).register(Network.PLAYER, this);
 		//iProxyLobby = (IProxyLobby) ObjectSpace.getRemoteObject(this, Network.PROXY_LOBBY, IProxyLobby.class);
 		//sPlayer = new SPlayer("Desconegut");	
 	}
-	
-	public static void putLobbyServer(LobbyServer auxLobbyServer){
-		lobbyServer = auxLobbyServer;
-		
-		}
 	
 	@Override
 	public Estats login(String user, String pass) {
 		// TODO Auto-generated method stub
 		if (!lobbyServer.getsql().existeixUsuari(user)) {
 			if (!lobbyServer.getsql().join(user, pass)){ 
-				desconecta();
+				LobbyServer.timer.badLogin(this);
 				return Estats.duplicateUser;
 			}
 		}
 		if (!lobbyServer.getsql().login(user, pass)){
-			desconecta();
+			LobbyServer.timer.badLogin(this);
 			return Estats.unauthorizedUser;
 		}
 		else {
-			estat = Estats.Logued;
+			estat = Estats.logued;
 			sPlayer.nom = user;
+			setChanged();
+			notifyObservers();
 			return estat;
 		}
 	}
 		
-	private void desconecta(){
-		new Timer().schedule(new TimerTask(){
-			@Override
-			public void run(){
-				lobbyServer.stop();
-			}},1000);
-	}
+	
 
 	@Override
-	public void update(Observable arg0, Object arg1) {
-		// TODO Auto-generated method stub
+	public void update(Observable ov, Object o) {
+		if (ov instanceof LobbyServer){
+			LobbyPlayer player = ((LobbyPlayer)o);
+			Estats estat = player.getEstat();
+			switch (estat){
+			case logued :
+				try {
+					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection.getID(), ElementDeSortida.OperacioEnvia.tu, sPlayer));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		
 	}
 	@Override
@@ -82,5 +92,18 @@ public class LobbyPlayer extends Observable implements IPlayer,Observer{
 	public SRoom getRoom() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	public Estats getEstat(){
+		return estat;
+	}
+	public Connection getConnection() {
+		return connection;
+	}
+	public void dispose(){
+		estat = Estats.disconnected;
+		setChanged();
+		notifyObservers();
+		deleteObservers();
+		
 	}
 }

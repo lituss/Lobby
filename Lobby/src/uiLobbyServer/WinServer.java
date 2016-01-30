@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -19,8 +20,6 @@ import comunicaComu.SGameSetimig;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
 import comunicaServer.LobbyServer;
-import comunicaServer.SwingOperations;
-
 import javax.swing.JList;
 import javax.swing.JTextArea;
 import javax.swing.DefaultListModel;
@@ -33,7 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 
-public class WinServer {
+public class WinServer extends Thread{
 
 	private JFrame frame;
 	private JTextField txtUser;
@@ -41,10 +40,18 @@ public class WinServer {
 	private LobbyServer lobbyServer;
 	JList Players;
 	ListModel listModelPlayers,listModelRooms,listModelGames;
+	public BlockingQueue <MissatgeSwing> llista = new LinkedBlockingQueue<MissatgeSwing>();
+	public static enum Operations{addGame,addPlayer,addRoom,delGame,delPlayer,delRoom;}
+	public static class MissatgeSwing{
+		public Operations operation;
+		public Object data;
+		public MissatgeSwing(Operations operation,Object data){
+			this.operation = operation;
+			this.data = data;
+		}
+	}
 	
-	
-public BlockingQueue <SwingOperations> nodes;
-private boolean stop = false;
+public boolean stop = false;
 	/**
 	 * Launch the application.
 	 */
@@ -67,39 +74,18 @@ private boolean stop = false;
 	 * @throws IOException 
 	 */
 	public WinServer() throws IOException {
-		nodes = new ArrayBlockingQueue<SwingOperations>(1000);
-		SwingOperations auxOperations = null;
 		lobbyServer = new LobbyServer(this);
 		initialize();
 		System.out.println("Hi ha vida despres de initcialitzar swing");
-		while (!stop){
-			try {
-				auxOperations = nodes.take();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			switch (auxOperations.operation) {
-			case addGame : addGame((SGame)auxOperations.data);
-			break;
-			case delGame : delGame((String)auxOperations.data);
-			break;
-			case addPlayer : addPlayer((SPlayer)auxOperations.data); 
-			break;
-			case delPlayer : delPlayer((String)auxOperations.data);
-			break;
-			case addRoom : addRoom ((SRoom)auxOperations.data);
-			break;
-			case delRoom : delRoom ((String)auxOperations.data);
-			}
-		}
+		start();
+		
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 * @return 
 	 */
-	public void stop(){stop = true;}
+	public void para(){stop = true;}
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 671, 761);
@@ -206,5 +192,31 @@ private boolean stop = false;
 	}
 	private void delGame(String nom){
 		((DefaultListModel) listModelGames).removeElement(nom);
+	}
+	
+	public void run(){
+		while (!stop){
+			try {
+				MissatgeSwing e = llista.take();
+				//public static enum operations{addGame,addPlayer,addRoom,delGame,delPlayer,delRoom;}
+				switch (e.operation) {
+					case addPlayer : addPlayer(((SPlayer)e.data));
+					break;
+					case delPlayer : delPlayer(((SPlayer)e.data).nom);
+					break;
+					case addGame : addGame(((SGame)e.data));
+					break;
+					case delGame : delGame (((SGame)e.data).nom);
+					break;
+					case addRoom : addRoom ((SRoom)e.data);
+					break;
+					case delRoom : delRoom ((String)e.data);
+					break;
+				} 
+			}catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+			}
+		}
 	}
 }
