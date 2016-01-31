@@ -84,7 +84,7 @@ try {
 	finally {
 		try {sentencia.close();} catch (Exception ignore) {}}
 
-if (pass == dbpass) return true;
+if (pass.equals(dbpass)) return true;
 return false;
 }
 

@@ -6,7 +6,7 @@ public class ElementDeEntrada{
 	Connection c;
 	Object o;
 	
-	ElementDeEntrada(Connection c , Object o){
+	public ElementDeEntrada(Connection c , Object o){
 		this.c = c;
 		this.o = o;
 	}

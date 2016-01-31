@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,6 +20,7 @@ import comunicaComu.SGame;
 import comunicaComu.SGameSetimig;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
+import comunicaServer.LobbyPlayer;
 import comunicaServer.LobbyServer;
 import javax.swing.JList;
 import javax.swing.JTextArea;
@@ -41,7 +43,7 @@ public class WinServer extends Thread{
 	JList Players;
 	ListModel listModelPlayers,listModelRooms,listModelGames;
 	public BlockingQueue <MissatgeSwing> llista = new LinkedBlockingQueue<MissatgeSwing>();
-	public static enum Operations{addGame,addPlayer,addRoom,delGame,delPlayer,delRoom;}
+	public static enum Operations{addGame,addPlayer,addRoom,delGame,delPlayer,delRoom,updatePlayer;}
 	public static class MissatgeSwing{
 		public Operations operation;
 		public Object data;
@@ -193,6 +195,12 @@ public boolean stop = false;
 	private void delGame(String nom){
 		((DefaultListModel) listModelGames).removeElement(nom);
 	}
+	private void updatePlayer(){
+		((DefaultListModel)listModelPlayers).clear();
+		for (Entry<Integer, LobbyPlayer> player : lobbyServer.players.entrySet()){
+			((DefaultListModel)listModelPlayers).addElement(player.getValue().sPlayer.nom);
+		}
+	}
 	
 	public void run(){
 		while (!stop){
@@ -211,6 +219,8 @@ public boolean stop = false;
 					case addRoom : addRoom ((SRoom)e.data);
 					break;
 					case delRoom : delRoom ((String)e.data);
+					break;
+					case updatePlayer : updatePlayer();
 					break;
 				} 
 			}catch (InterruptedException e) {

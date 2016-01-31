@@ -10,23 +10,24 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import comunicaComu.Estats;
 import comunicaComu.IPlayer;
 import comunicaComu.Network;
+import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
 
 public class LobbyClient {
 	Client client;
-	IPlayer player;
 	ProxyLobby proxyLobby;
-	WinServer winserver;
+	WinClient winClient;
 	public boolean connected = false;
 	public SRoom.Tipus tipusRoom = SRoom.Tipus.Setimig; 
 	Connection connection;
 	ProcessaEntrades processaEntrades;
 	ProcessaSortides processaSortides;
 
-	public LobbyClient (WinServer winServer) {
-		this.winserver = winServer;
+	public LobbyClient (WinClient winServer) {
+		this.winClient = winServer;
 		client = new Client();
 		client.start();
 
@@ -116,12 +117,16 @@ public class LobbyClient {
 		public boolean para = false;
 		
 		public void run(){
+			Object o = null;
 			while (!para){
 				try {
-					Object o = llista.take();
+					o = llista.take();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}
+				if (o instanceof Estats){
+					winClient.show(((Estats)o).toString());
 				}
 			}
 		}
@@ -132,14 +137,24 @@ public class LobbyClient {
 		public boolean para = false;
 		
 		public void run(){
+			Object o = null;
 			while (!para){
 				try {
-					Object o = llista.take();
+					o = llista.take();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				connection.sendTCP(o);
 			}
+		}
+	}
+	public void login(String user,String pass){
+		try {
+			processaSortides.llista.put(new SPlayer(user,pass));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

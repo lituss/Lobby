@@ -18,7 +18,7 @@ public ProxyLobby(LobbyClient lobbyClient){
 
 	@Override
 	public void addRoom(SRoom sRoom) {
-		lobbyClient.winserver.addRoom(sRoom);
+		lobbyClient.winClient.addRoom(sRoom);
 		// TODO Auto-generated method stub
 		
 	}

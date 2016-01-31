@@ -18,6 +18,7 @@ import comunicaComu.Estats;
 import comunicaComu.Network;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
+import cues.ElementDeEntrada;
 import cues.ReceiverDispatcher;
 import cues.SenderDispatcher;
 import uiLobbyServer.WinServer;
@@ -29,7 +30,7 @@ public class LobbyServer extends Observable implements Observer{
 private Array<Room> rooms;
 public static ConcurrentMap <Integer , LobbyPlayer> players = new ConcurrentHashMap();
 private Server server;
-private WinServer winServer;
+public WinServer winServer;
 private sqlDB sql;
 private boolean stop = false;
 private ReceiverDispatcher receiverDispatcher;
@@ -150,13 +151,18 @@ public LobbyServer(WinServer winServer) throws IOException{
 		}
 		@Override
 		public void received(Connection c, Object o) {
-			
+			try {
+				lobbyServer.receiverDispatcher.llista.put(new ElementDeEntrada(c,o));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}	
 	}
 	
 	public class MyTimer extends Timer{
 		void timeoutLogin(LobbyPlayer player){ // temps per tallar conexio si no entra login
-			int timeout = 5000; //5 seg
+			int timeout = 500000; //5 seg
 			TimerTask task = new TimerTask(){
 				@Override
 				public void run() {
@@ -185,5 +191,15 @@ public LobbyServer(WinServer winServer) throws IOException{
 	@Override
 	public void update(Observable ov, Object o) {
 		
+	}
+	public void update (Observable ov) {
+		if ( ov instanceof LobbyPlayer){
+			switch (((LobbyPlayer)ov).getEstat()){
+			case logued : 
+				setChanged();
+				notifyObservers(ov);
+				break;
+			}
+		}
 	}
 }

@@ -17,12 +17,14 @@ import comunicaComu.Network;
 import comunicaComu.SPlayer;
 import comunicaComu.SRoom;
 import cues.ElementDeSortida;
+import uiLobbyServer.WinServer.MissatgeSwing;
+import uiLobbyServer.WinServer.Operations;
 
 
 public class LobbyPlayer extends Observable implements IPlayer,Observer{
 	private Connection connection;
 	static LobbyServer lobbyServer;
-	SPlayer sPlayer;
+	public SPlayer sPlayer;
 	
 	public LobbyPlayer(Connection connection){
 		this.connection = connection;
@@ -74,12 +76,25 @@ public class LobbyPlayer extends Observable implements IPlayer,Observer{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				try {
+					lobbyServer.winServer.llista.put(new MissatgeSwing(Operations.updatePlayer,null));
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				break;
 			case disconnected :
 				try {
 					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, sPlayer));
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}
+				try {
+					lobbyServer.winServer.llista.put(new MissatgeSwing(Operations.delPlayer,player.sPlayer));
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 		}

@@ -4,7 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public  class SenderDispatcher extends Thread{
-	public BlockingQueue <ElementDeSortida> llista = new LinkedBlockingQueue<ElementDeSortida>();
+	public static BlockingQueue <ElementDeSortida> llista = new LinkedBlockingQueue<ElementDeSortida>();
 	boolean para = false;
 	
 	public void setPara(boolean para){
