@@ -21,13 +21,13 @@ import cues.ElementDeSortida;
 
 public class LobbyPlayer extends Observable implements IPlayer,Observer{
 	private Connection connection;
-	private Estats estat;
 	static LobbyServer lobbyServer;
 	SPlayer sPlayer;
 	
 	public LobbyPlayer(Connection connection){
 		this.connection = connection;
-		estat = Estats.connectat;
+		sPlayer = new SPlayer("Desconegut");
+		sPlayer.estat = Estats.connectat;
 		LobbyServer.timer.timeoutLogin(this);
 		addObserver(lobbyServer);
 		this.setChanged();
@@ -51,11 +51,11 @@ public class LobbyPlayer extends Observable implements IPlayer,Observer{
 			return Estats.unauthorizedUser;
 		}
 		else {
-			estat = Estats.logued;
+			sPlayer.estat = Estats.logued;
 			sPlayer.nom = user;
 			setChanged();
 			notifyObservers();
-			return estat;
+			return sPlayer.estat;
 		}
 	}
 		
@@ -69,7 +69,14 @@ public class LobbyPlayer extends Observable implements IPlayer,Observer{
 			switch (estat){
 			case logued :
 				try {
-					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection.getID(), ElementDeSortida.OperacioEnvia.tu, sPlayer));
+					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, sPlayer));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			case disconnected :
+				try {
+					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, sPlayer));
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -94,13 +101,13 @@ public class LobbyPlayer extends Observable implements IPlayer,Observer{
 		return null;
 	}
 	public Estats getEstat(){
-		return estat;
+		return sPlayer.estat;
 	}
 	public Connection getConnection() {
 		return connection;
 	}
 	public void dispose(){
-		estat = Estats.disconnected;
+		sPlayer.estat = Estats.disconnected;
 		setChanged();
 		notifyObservers();
 		deleteObservers();

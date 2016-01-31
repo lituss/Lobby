@@ -151,20 +151,8 @@ public LobbyServer(WinServer winServer) throws IOException{
 		@Override
 		public void received(Connection c, Object o) {
 			
-		}
-		
-		
+		}	
 	}
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
 	
 	public class MyTimer extends Timer{
 		void timeoutLogin(LobbyPlayer player){ // temps per tallar conexio si no entra login

@@ -2,6 +2,8 @@ package test;
 
 import java.awt.EventQueue;
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -19,6 +21,9 @@ public class LobbyClient {
 	WinServer winserver;
 	public boolean connected = false;
 	public SRoom.Tipus tipusRoom = SRoom.Tipus.Setimig; 
+	Connection connection;
+	ProcessaEntrades processaEntrades;
+	ProcessaSortides processaSortides;
 
 	public LobbyClient (WinServer winServer) {
 		this.winserver = winServer;
@@ -35,17 +40,7 @@ public class LobbyClient {
 		// Register the chat frame so the server can call methods on it.
 		//new ObjectSpace(client).register(Network.PROXY_LOBBY, proxyLobby);
 
-		client.addListener(new Listener() {
-			public void disconnected (Connection connection) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run () {
-						// Closing the frame calls the close listener which will stop the client's update thread.
-						//chatFrame.dispose();
-						// aqui el que hem de fer quan es desconecta 
-					}
-				});
-			}
-		});
+		client.addListener(new NetworkListener());
 
 		
 
@@ -81,124 +76,70 @@ public class LobbyClient {
 				}
 			}
 		}.start();
+		processaEntrades = new ProcessaEntrades();
+		processaEntrades.start();
+		processaSortides = new ProcessaSortides();
+		processaSortides.start();
+	}
+	public class NetworkListener extends Listener{
+		@Override
+		public void connected(Connection c) {
+			connection = c;
+			//super.connected(c);
+		}
+		@Override
+		public void disconnected(Connection arg0) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run () {
+					// Closing the frame calls the close listener which will stop the client's update thread.
+					//chatFrame.dispose();
+					// aqui el que hem de fer quan es desconecta 
+				}
+			});
+		
+			//super.disconnected(arg0);
+		}
+		@Override
+		public void received(Connection arg0, Object o) {
+			// TODO Auto-generated method stub
+			try {
+				processaEntrades.llista.put(o);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//super.received(arg0, arg1);
+		}
+	}
+	public class ProcessaEntrades extends Thread{
+		public BlockingQueue<Object> llista = new LinkedBlockingQueue<Object>();
+		public boolean para = false;
+		
+		public void run(){
+			while (!para){
+				try {
+					Object o = llista.take();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public class ProcessaSortides extends Thread{
+		public BlockingQueue<Object> llista = new LinkedBlockingQueue<Object>();
+		public boolean para = false;
+		
+		public void run(){
+			while (!para){
+				try {
+					Object o = llista.take();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
-/*
-	// This is the JFrame for the client. It implments IChatFrame so the server can call methods on it.
-	static private class ChatFrame extends JFrame implements IChatFrame {
-		CardLayout cardLayout;
-		JProgressBar progressBar;
-		JList messageList;
-		JTextField sendText;
-		JButton sendButton;
-		JList nameList;
-
-		public ChatFrame (String host) {
-			super("Chat RMI Client");
-			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			setSize(640, 200);
-			setLocationRelativeTo(null);
-
-			Container contentPane = getContentPane();
-			cardLayout = new CardLayout();
-			contentPane.setLayout(cardLayout);
-			{
-				JPanel panel = new JPanel(new BorderLayout());
-				contentPane.add(panel, "progress");
-				panel.add(new JLabel("Connecting to " + host + "..."));
-				{
-					panel.add(progressBar = new JProgressBar(), BorderLayout.SOUTH);
-					progressBar.setIndeterminate(true);
-				}
-			}
-			{
-				JPanel panel = new JPanel(new BorderLayout());
-				contentPane.add(panel, "chat");
-				{
-					JPanel topPanel = new JPanel(new GridLayout(1, 2));
-					panel.add(topPanel);
-					{
-						topPanel.add(new JScrollPane(messageList = new JList()));
-						messageList.setModel(new DefaultListModel());
-					}
-					{
-						topPanel.add(new JScrollPane(nameList = new JList()));
-						nameList.setModel(new DefaultListModel());
-					}
-					DefaultListSelectionModel disableSelections = new DefaultListSelectionModel() {
-						public void setSelectionInterval (int index0, int index1) {
-						}
-					};
-					messageList.setSelectionModel(disableSelections);
-					nameList.setSelectionModel(disableSelections);
-				}
-				{
-					JPanel bottomPanel = new JPanel(new GridBagLayout());
-					panel.add(bottomPanel, BorderLayout.SOUTH);
-					bottomPanel.add(sendText = new JTextField(), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER,
-						GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-					bottomPanel.add(sendButton = new JButton("Send"), new GridBagConstraints(1, 0, 1, 1, 0, 0,
-						GridBagConstraints.CENTER, 0, new Insets(0, 0, 0, 0), 0, 0));
-				}
-			}
-
-			sendText.addActionListener(new ActionListener() {
-				public void actionPerformed (ActionEvent e) {
-					sendButton.doClick();
-				}
-			});
-		}
-
-		public void setSendListener (final Runnable listener) {
-			sendButton.addActionListener(new ActionListener() {
-				public void actionPerformed (ActionEvent evt) {
-					if (getSendText().length() == 0) return;
-					listener.run();
-					sendText.setText("");
-					sendText.requestFocus();
-				}
-			});
-		}
-
-		public void setCloseListener (final Runnable listener) {
-			addWindowListener(new WindowAdapter() {
-				public void windowClosed (WindowEvent evt) {
-					listener.run();
-				}
-
-				public void windowActivated (WindowEvent evt) {
-					sendText.requestFocus();
-				}
-			});
-		}
-
-		public String getSendText () {
-			return sendText.getText().trim();
-		}
-
-		// The server calls this method as needed.
-		public void setNames (final String[] names) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run () {
-					cardLayout.show(getContentPane(), "chat");
-					DefaultListModel model = (DefaultListModel)nameList.getModel();
-					model.removeAllElements();
-					for (String name : names)
-						model.addElement(name);
-				}
-			});
-		}
-
-		// The server calls this method as needed.
-		public void addMessage (final String message) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run () {
-					DefaultListModel model = (DefaultListModel)messageList.getModel();
-					model.addElement(message);
-					messageList.ensureIndexIsVisible(model.size() - 1);
-				}
-			});
-		}	
-}
-}
-*/

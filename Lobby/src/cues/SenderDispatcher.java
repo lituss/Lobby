@@ -15,6 +15,10 @@ public  class SenderDispatcher extends Thread{
 		while (!para){
 			try {
 				ElementDeSortida e = llista.take();
+				switch (e.operacio) {
+				case tu :
+					e.connection_sender.sendTCP(e.packet);
+				}
 			} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

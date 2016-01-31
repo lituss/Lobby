@@ -1,15 +1,15 @@
 package cues;
 
-
+import com.esotericsoftware.kryonet.Connection;
 
 public class ElementDeSortida{
 	public static enum OperacioEnvia {tots,totsElsDemes,tu};
-	int id_sender;
+	Connection connection_sender;
 	OperacioEnvia operacio;
 	Object packet;
 	
-	public ElementDeSortida(int id_server,OperacioEnvia operacio,Object packet){
-		this.id_sender = id_sender;
+	public ElementDeSortida(Connection connection_sender,OperacioEnvia operacio,Object packet){
+		this.connection_sender = connection_sender;
 		this.operacio = operacio;
 		this.packet = packet;
 	}

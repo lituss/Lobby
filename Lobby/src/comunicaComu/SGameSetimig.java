@@ -6,7 +6,7 @@ public class SGameSetimig extends SGame{
 	public int credit,maxAposta;
 	
 	public SGameSetimig(Estat estat, int maxPlayers, String nom, Array<SPlayer> players,int credit,int maxAposta) {
-		super(estat, maxPlayers, nom, players);
+		super(estat, maxPlayers, nom, players,null);
 		this.credit = credit;
 		this.maxAposta = maxAposta;
 		
