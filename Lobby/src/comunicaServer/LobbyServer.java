@@ -5,10 +5,15 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.swing.DefaultListModel;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -147,6 +152,7 @@ public LobbyServer(WinServer winServer) throws IOException{
 				e.printStackTrace();
 			}
 			players.remove(player.getConnection().getID(),player);
+			System.out.printf("player desconnectat : %s\n",player.sPlayer.nom);
 			
 		}
 		@Override
@@ -162,7 +168,7 @@ public LobbyServer(WinServer winServer) throws IOException{
 	
 	public class MyTimer extends Timer{
 		void timeoutLogin(LobbyPlayer player){ // temps per tallar conexio si no entra login
-			int timeout = 500000; //5 seg
+			int timeout = 20000; //5 seg
 			TimerTask task = new TimerTask(){
 				@Override
 				public void run() {
@@ -184,20 +190,46 @@ public LobbyServer(WinServer winServer) throws IOException{
 				}
 				
 			};
+			this.schedule(task, timeout);
 		}
 			
 	}
+public LobbyPlayer[] getPlayers(){
+	List<LobbyPlayer> playerList = new LinkedList<LobbyPlayer>();
 
-	@Override
-	public void update(Observable ov, Object o) {
-		
+	for (Entry<Integer, LobbyPlayer> player : players.entrySet()){
+		playerList.add(player.getValue());
 	}
-	public void update (Observable ov) {
+	LobbyPlayer[] aux = new LobbyPlayer[playerList.size()];
+	int conta = 0;
+	for (LobbyPlayer p : playerList) {
+		aux[conta++] = p;
+	}
+	return aux;
+}
+public SPlayer[] getSPlayers(){
+	LobbyPlayer[] lps = getPlayers();
+	SPlayer[] sp = new SPlayer[lps.length];
+	int conta = 0;
+	for (LobbyPlayer lp : lps) sp[conta++] = lp.sPlayer;
+	return sp;
+}
+	@Override
+	public void update (Observable ov, Object o) {
 		if ( ov instanceof LobbyPlayer){
-			switch (((LobbyPlayer)ov).getEstat()){
+			Estats estat ;
+			estat = ((LobbyPlayer)ov).getEstat();
+			switch (estat){
 			case logued : 
+				System.out.println("player ha fet login i anem a notificar als altres");
 				setChanged();
 				notifyObservers(ov);
+				try {
+					winServer.llista.put(new MissatgeSwing(Operations.updatePlayer,null));
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				break;
 			}
 		}

@@ -90,11 +90,13 @@ public class LobbyClient {
 		}
 		@Override
 		public void disconnected(Connection arg0) {
+			winClient.show("Servidor desconectat");
 			EventQueue.invokeLater(new Runnable() {
 				public void run () {
 					// Closing the frame calls the close listener which will stop the client's update thread.
 					//chatFrame.dispose();
 					// aqui el que hem de fer quan es desconecta 
+					//connection.close();
 				}
 			});
 		
@@ -121,6 +123,22 @@ public class LobbyClient {
 			while (!para){
 				try {
 					o = llista.take();
+					if (o instanceof SPlayer){
+						SPlayer sPlayer = ((SPlayer)o);
+						switch (sPlayer.estat){
+							case logued :
+								winClient.addPlayer(sPlayer);
+							break;
+							case disconnected :
+								winClient.delPlayer(sPlayer.nom);
+							break;
+						}	
+					}
+					else
+						if (o instanceof SPlayer[]){
+							SPlayer[] sPlayers = ((SPlayer[])o);
+							for (SPlayer sp : sPlayers) winClient.addPlayer(sp);
+						}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -40,8 +40,13 @@ public class LobbyPlayer extends Observable implements IPlayer,Observer{
 	}
 	
 	@Override
-	public Estats login(String user, String pass) {
-		// TODO Auto-generated method stub
+	public synchronized Estats login(String user, String pass) {
+		
+		for (SPlayer sp : lobbyServer.getSPlayers()) 
+			if (sp.nom.equals(user)) {
+				LobbyServer.timer.badLogin(this);
+				return Estats.userAlreadyLogued;
+			}
 		if (!lobbyServer.getsql().existeixUsuari(user)) {
 			if (!lobbyServer.getsql().join(user, pass)){ 
 				LobbyServer.timer.badLogin(this);
@@ -70,32 +75,35 @@ public class LobbyPlayer extends Observable implements IPlayer,Observer{
 			Estats estat = player.getEstat();
 			switch (estat){
 			case logued :
-				try {
-					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, sPlayer));
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				try {
-					lobbyServer.winServer.llista.put(new MissatgeSwing(Operations.updatePlayer,null));
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				if (player == this)
+					try {
+						lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, lobbyServer.getSPlayers()));
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				else
+					try {
+						lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, player.sPlayer));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
 				break;
 			case disconnected :
 				try {
-					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, sPlayer));
+					lobbyServer.senderDispatcher.llista.put(new ElementDeSortida(connection, ElementDeSortida.OperacioEnvia.tu, player.sPlayer));
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				try {
+				/*try {
 					lobbyServer.winServer.llista.put(new MissatgeSwing(Operations.delPlayer,player.sPlayer));
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+				}*/
 			}
 		}
 		

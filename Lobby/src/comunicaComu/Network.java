@@ -26,6 +26,7 @@ public class Network {
 		kryo.register(String[].class);
 		kryo.register(SGame.class);
 		kryo.register(SPlayer.class);
+		kryo.register(SPlayer[].class);
 		kryo.register(SRoom.class);
 		kryo.register(Estats.class);
 		kryo.register(Array.class);
