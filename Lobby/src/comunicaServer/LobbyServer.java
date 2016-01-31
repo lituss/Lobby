@@ -40,8 +40,8 @@ private sqlDB sql;
 private boolean stop = false;
 private ReceiverDispatcher receiverDispatcher;
 public SenderDispatcher senderDispatcher;
-
 public static MyTimer timer;
+
 public LobbyServer(WinServer winServer) throws IOException{
 	this.winServer = winServer;
 	timer = new MyTimer();
